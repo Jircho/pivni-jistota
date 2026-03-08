@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pivní Jistota | Řemeslné pivo v Dejvicích</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0d0b;
+    --bg2: #161410;
+    --bg3: #1d1a15;
+    --amber: #e8a020;
+    --amber-light: #f5be50;
+    --amber-dim: #a06c10;
+    --foam: #f5e9c8;
+    --text: #d4c9a8;
+    --text-dim: #7a6e58;
+    --slate: #2a2520;
+    --brick: #3d2215;
+    --border: rgba(232,160,32,0.18);
+    --glow: rgba(232,160,32,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: linear-gradient(to bottom, rgba(14,13,11,0.97), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .nav-logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--foam); }
+  .nav-phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--amber);
+    color: #0e0d0b;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    padding: 8px 18px;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .nav-phone:hover { background: var(--amber-light); }
+  .nav-phone svg { flex-shrink: 0; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 60% 40%, rgba(180,100,10,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(50,30,5,0.4) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(14,13,11,0.3) 0%, rgba(14,13,11,0.7) 60%, var(--bg) 100%);
+    z-index: 1;
+  }
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    background:
+      url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?w=1400&auto=format&fit=crop&q=60') center/cover no-repeat;
+    opacity: 0.25;
+    filter: saturate(0.6) sepia(0.4);
+  }
+  /* Tap pipes decorative element */
+  .hero-taps {
+    position: absolute;
+    right: -10px;
+    bottom: 0;
+    width: 45%;
+    max-width: 420px;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1558642891-54be180ea339?w=800&auto=format&fit=crop&q=60') bottom right/cover no-repeat;
+    opacity: 0.2;
+    filter: sepia(0.8) saturate(0.4);
+    mask-image: linear-gradient(to left, rgba(0,0,0,0.6), transparent);
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 28px;
+    max-width: 720px;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--amber);
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(3rem, 9vw, 6.5rem);
+    font-weight: 700;
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--foam);
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--amber);
+    display: block;
+  }
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: var(--text);
+    max-width: 480px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-sub strong { color: var(--amber-light); font-weight: 400; }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--amber);
+    color: #0a0900;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    text-decoration: none;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--amber-light); transform: translateY(-2px); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--foam);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 13px 28px;
+    text-decoration: none;
+    border-radius: 2px;
+    border: 1.5px solid rgba(245,233,200,0.4);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, transform 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+  .hero-stats {
+    position: absolute;
+    bottom: 80px;
+    right: 28px;
+    z-index: 2;
+    text-align: right;
+    opacity: 0;
+    animation: fadeIn 1.2s 1.2s forwards;
+  }
+  .hero-stats .stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .hero-stats .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 80px 28px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+  .section-label::before {
+    content: '// ';
+    opacity: 0.5;
+  }
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--foam);
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    margin-bottom: 40px;
+  }
+  h2 span { color: var(--amber); }
+  .max-w { max-width: 1100px; margin: 0 auto; }
+
+  /* ── TAP LIST ── */
+  #taplist {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .taplist-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .taplist-header h2 { margin-bottom: 0; }
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(232,160,32,0.1);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    text-transform: uppercase;
+  }
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .tap-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .tap-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 0 20px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .tap-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--amber);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .tap-card:hover { border-color: rgba(232,160,32,0.4); transform: translateX(3px); }
+  .tap-card:hover::before { opacity: 1; }
+  .tap-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--amber-dim);
+    line-height: 1;
+    text-align: center;
+  }
+  .tap-num span {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .tap-info { min-width: 0; }
+  .tap-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--foam);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tap-brewery {
+    font-size: 0.9rem;
+    color: var(--amber);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+  .tap-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .tag-style { border-color: rgba(245,233,200,0.2); color: var(--text-dim); }
+  .tag-abv { border-color: rgba(232,160,32,0.3); color: var(--amber-dim); }
+  .tap-price {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .price-val {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+  }
+  .price-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+  }
+  /* special featured beer */
+  .tap-card.featured {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--brick) 0%, var(--bg3) 60%);
+    border-color: rgba(232,160,32,0.35);
+  }
+  .tap-card.featured .tap-name { font-size: 1.6rem; }
+  .featured-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .tap-note {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(232,160,32,0.06);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 2px 2px 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+  .tap-note strong { color: var(--amber); font-style: normal; font-weight: 400; }
+
+  /* ── SNACKS ── */
+  #snacks { background: var(--bg); }
+  .snacks-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .snacks-intro {
+    max-width: 520px;
+  }
+  .snacks-intro p {
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .snack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .snack-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 22px 20px;
+    transition: border-color 0.2s;
+  }
+  .snack-card:hover { border-color: rgba(232,160,32,0.35); }
+  .snack-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+  .snack-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--foam);
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .snack-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  .snack-img-block {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 240px;
+    background: var(--bg3);
+  }
+  .snack-img-block img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    filter: sepia(0.2) saturate(0.9);
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+  .snack-img-block:hover img { opacity: 1; }
+  .snack-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(14,13,11,0.6), transparent);
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+  .about-grid {
+    display: grid;
+    gap: 48px;
+  }
+  .about-text p {
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .about-text p:last-child { margin-bottom: 0; }
+  .about-text strong { color: var(--amber-light); font-weight: 400; }
+  .amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .amenity {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,160,32,0.08);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .amenity svg { color: var(--amber); flex-shrink: 0; }
+  .about-photos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .about-photo {
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg3);
+  }
+  .about-photo img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    filter: sepia(0.3) saturate(0.7);
+    opacity: 0.75;
+    display: block;
+    transition: opacity 0.3s;
+  }
+  .about-photo:hover img { opacity: 1; }
+  .about-photo.tall img { height: 200px; }
+
+  /* ── REVIEWS ── */
+  #reviews {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .rating-hero {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 32px 28px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 36px;
+  }
+  .rating-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .rating-stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+    font-size: 1.3rem;
+  }
+  .rating-count {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+  .rating-count strong { color: var(--text); font-weight: 400; }
+  .reviews-grid {
+    display: grid;
+    gap: 16px;
+  }
+  .review-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+  }
+  .review-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .reviewer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .reviewer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--slate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    color: var(--amber);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .reviewer-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
+    color: var(--foam);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .reviewer-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+  .review-stars { font-size: 0.9rem; }
+  .review-text {
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text);
+    font-size: 1rem;
+  }
+  .review-platform {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 60px 28px 36px;
+  }
+  .footer-grid {
+    display: grid;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .footer-brand .nav-logo {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+  }
+  .footer-tagline {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    font-style: italic;
+    max-width: 280px;
+    line-height: 1.6;
+  }
+  .footer-socials {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .social-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .footer-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+  .hours-list { list-style: none; }
+  .hours-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+  }
+  .hours-list li:last-child { border-bottom: none; }
+  .hours-day { color: var(--text-dim); font-weight: 300; }
+  .hours-time { color: var(--foam); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .hours-time.tonight { color: var(--amber); }
+  .contact-list { list-style: none; }
+  .contact-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .contact-list li svg { color: var(--amber); flex-shrink: 0; margin-top: 3px; }
+  .contact-list a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 300;
+    transition: color 0.2s;
+  }
+  .contact-list a:hover { color: var(--amber); }
+  .contact-list .small { font-size: 0.85rem; }
+  .map-block {
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    min-height: 220px;
+  }
+  .map-block iframe {
+    width: 100%;
+    height: 220px;
+    display: block;
+    border: none;
+    filter: saturate(0.4) brightness(0.7);
+    transition: filter 0.3s;
+  }
+  .map-block:hover iframe { filter: saturate(0.7) brightness(0.85); }
+  .transport-note {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-bottom {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── MOBILE CTA STRIP ── */
+  .mobile-cta {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 99;
+    background: rgba(14,13,11,0.97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .mobile-cta a {
+    flex: 1;
+    text-align: center;
+    padding: 13px 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+  .mobile-cta .call { background: var(--amber); color: #0a0900; }
+  .mobile-cta .call:hover { background: var(--amber-light); }
+  .mobile-cta .reserve { background: var(--bg3); color: var(--foam); border: 1px solid var(--border); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .mobile-cta { display: flex; }
+    footer { padding-bottom: 90px; }
+    .hero-stats { display: none; }
+    .hero-taps { opacity: 0.1; }
+    .snack-grid { grid-template-columns: 1fr; }
+    .about-photos { grid-template-columns: 1fr; }
+    .rating-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .rating-num { font-size: 3.5rem; }
+    .tap-card { grid-template-columns: 40px 1fr auto; gap: 0 12px; padding: 18px 16px; }
+    h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
+  }
+
+  @media (min-width: 641px) {
+    .tap-grid { grid-template-columns: 1fr 1fr; }
+    .tap-card.featured { grid-column: span 2; }
+    .snack-grid { grid-template-columns: repeat(2, 1fr); }
+    .snacks-layout { grid-template-columns: 1fr 1fr; align-items: start; gap: 60px; }
+    .reviews-grid { grid-template-columns: 1fr 1fr; }
+    .about-grid { grid-template-columns: 1.2fr 1fr; align-items: start; gap: 60px; }
+    .footer-grid { grid-template-columns: 1.2fr 1fr 1fr 1fr; }
+    .footer-grid > div:first-child { grid-column: span 2; }
+    .footer-grid > div:last-child { grid-column: span 2; }
+  }
+
+  @media (min-width: 900px) {
+    .tap-grid { grid-template-columns: repeat(3, 1fr); }
+    .tap-card.featured { grid-column: span 3; display: grid; grid-template-columns: 60px 1fr auto; }
+    .snack-grid { grid-template-columns: repeat(4, 1fr); }
+    .reviews-grid { grid-template-columns: repeat(3, 1fr); }
+    .footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; }
+    .footer-grid > div:first-child { grid-column: 1; }
+    .footer-grid > div:last-child { grid-column: span 1; }
+  }
+
+  /* Divider */
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--amber);
+    margin: 20px 0 36px;
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Pivní <span>Jistota</span></a>
+  <a href="tel:+420725569704" class="nav-phone">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.59 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.5 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.07z"/></svg>
+    725 569 704
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-img"></div>
+  <div class="hero-taps"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Praha 6 · Dejvice</p>
+    <h1>Tvoje Pivní<em>Jistota.</em></h1>
+    <p class="hero-sub">
+      <strong>9 rotujících píp</strong> plných řemeslného piva z těch nejlepších minipivovarů.
+      Výčepní, kteří to myslí s pivem vážně.
+    </p>
+    <div class="hero-ctas">
+      <a href="#taplist" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7h4v13H3zM9 3h4v17H9zM15 10h4v10h-4z"/></svg>
+        Co je na čepu?
+      </a>
+      <a href="tel:+420725569704" class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.59 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.5 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.07z"/></svg>
+        Rezervovat stůl
+      </a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-num">9</div>
+    <div class="stat-label">píp · rotující výběr</div>
+  </div>
+</section>
+
+<!-- TAPLIST -->
+<section id="taplist">
+  <div class="max-w">
+    <div class="taplist-header">
+      <div>
+        <p class="section-label">Co teče</p>
+        <h2>Na čepu <span>dnes</span></h2>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        Aktuální výběr
+      </div>
+    </div>
+
+    <div class="tap-grid">
+
+      <!-- Featured beer -->
+      <div class="tap-card featured">
+        <div class="featured-badge">⭐ Tip výčepního</div>
+        <div class="tap-num">1<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">22° Hopminer Triple NEIPA</div>
+          <div class="tap-brewery">Pivovar Raven Brewing</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Triple NEIPA</span>
+            <span class="tag tag-abv">22° · 9.2% ABV</span>
+            <span class="tag tag-style">Hazy · Tropical</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">89 Kč</div>
+          <div class="price-unit">0.3 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 2 -->
+      <div class="tap-card">
+        <div class="tap-num">2<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Světlý Ležák 11°</div>
+          <div class="tap-brewery">Pivovar Čestmír</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Ležák</span>
+            <span class="tag tag-abv">11° · 4.5% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">49 Kč</div>
+          <div class="price-unit">0.5 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 3 -->
+      <div class="tap-card">
+        <div class="tap-num">3<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Jistota Ale 12°</div>
+          <div class="tap-brewery">Pivovar Clock</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">APA</span>
+            <span class="tag tag-abv">12° · 5.1% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">59 Kč</div>
+          <div class="price-unit">0.4 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 4 -->
+      <div class="tap-card">
+        <div class="tap-num">4<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Dark Amber Porter</div>
+          <div class="tap-brewery">Pivovar Bernard</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Porter</span>
+            <span class="tag tag-abv">14° · 6.0% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">65 Kč</div>
+          <div class="price-unit">0.4 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 5 -->
+      <div class="tap-card">
+        <div class="tap-num">5<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Řezané Polotmavé</div>
+          <div class="tap-brewery">Pivovar Matuška</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Polotmavé</span>
+            <span class="tag tag-abv">13° · 5.3% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">55 Kč</div>
+          <div class="price-unit">0.5 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 6 -->
+      <div class="tap-card">
+        <div class="tap-num">6<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Session IPA Hop Rider</div>
+          <div class="tap-brewery">Pivovar Zhůřák</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Session IPA</span>
+            <span class="tag tag-abv">11° · 4.2% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">52 Kč</div>
+          <div class="price-unit">0.4 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 7 -->
+      <div class="tap-card">
+        <div class="tap-num">7<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Witbier Bílá Hora</div>
+          <div class="tap-brewery">Pivovar Vinohrad</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Witbier</span>
+            <span class="tag tag-abv">12° · 4.8% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">57 Kč</div>
+          <div class="price-unit">0.4 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 8 -->
+      <div class="tap-card">
+        <div class="tap-num">8<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Baltic Stout 15°</div>
+          <div class="tap-brewery">Pivovar Konrad</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Baltic Stout</span>
+            <span class="tag tag-abv">15° · 6.8% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">72 Kč</div>
+          <div class="price-unit">0.3 l</div>
+        </div>
+      </div>
+
+      <!-- Beer 9 -->
+      <div class="tap-card">
+        <div class="tap-num">9<span>pípa</span></div>
+        <div class="tap-info">
+          <div class="tap-name">Kvasnicový Světlý 10°</div>
+          <div class="tap-brewery">Pivovar Únětice</div>
+          <div class="tap-meta">
+            <span class="tag tag-style">Kvasnicové</span>
+            <span class="tag tag-abv">10° · 4.1% ABV</span>
+          </div>
+        </div>
+        <div class="tap-price">
+          <div class="price-val">45 Kč</div>
+          <div class="price-unit">0.5 l</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tap-note">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+      <span>Výběr se <strong>průběžně mění</strong> – aktuální seznam vždy ověříš přímo u nás nebo na Facebooku.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SNACKS -->
+<section id="snacks">
+  <div class="max-w">
+    <div class="snacks-layout">
+      <div class="snacks-intro">
+        <p class="section-label">K pití</p>
+        <h2>Něco <span>k zakousnutí</span></h2>
+        <div class="divider"></div>
+        <p>Nehledej u nás minutky ani polední menu. Ale co máme, to je <strong>poctivé řemeslo</strong> – pečlivě vybrané produkty, které k dobrému pivu prostě patří.</p>
+        <p>Nic ze skladového mrazáku. Vše, co podáváme, doladí tvé pivo k dokonalosti.</p>
+        <div class="snack-img-block" style="margin-top:28px; height:220px;">
+          <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&auto=format&fit=crop&q=60" alt="Pâté and craft beer" />
+          <div class="snack-img-overlay"></div>
+        </div>
+      </div>
+      <div>
+        <div class="snack-grid">
+          <div class="snack-card">
+            <div class="snack-icon">🦆</div>
+            <div class="snack-name">Kachní paštika</div>
+            <div class="snack-desc">Výběrová kachní paštika s brusinkovým želé a toustem z kváskového chleba</div>
+          </div>
+          <div class="snack-card">
+            <div class="snack-icon">🪿</div>
+            <div class="snack-name">Husí rillettes</div>
+            <div class="snack-desc">Tradiční francouzský konfitovaný husí stěr s dijonskou hořčicí</div>
+          </div>
+          <div class="snack-card">
+            <div class="snack-icon">🥩</div>
+            <div class="snack-name">Masové rillettes</div>
+            <div class="snack-desc">Pomalu dušené vepřové rillettes se zelenou cibulkou a křenovou smetanou</div>
+          </div>
+          <div class="snack-card">
+            <div class="snack-icon">🧀</div>
+            <div class="snack-name">Nakládaný hermelín</div>
+            <div class="snack-desc">Zrající hermelín marinovaný v oleji s česnekem, chilli a bylinkami</div>
+          </div>
+          <div class="snack-card">
+            <div class="snack-icon">🥔</div>
+            <div class="snack-name">Řemeslné chipsy</div>
+            <div class="snack-desc">Pečené brambůrky od lokálních výrobců – žádná průmyslová chemie</div>
+          </div>
+          <div class="snack-card">
+            <div class="snack-icon">🫙</div>
+            <div class="snack-name">Sezónní výběr</div>
+            <div class="snack-desc">Rotující nabídka delikates dle sezóny – ptejte se výčepního</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="max-w">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">O nás</p>
+        <h2>Výčepní, <span>kteří to znají</span></h2>
+        <div class="divider"></div>
+        <p>Pivní Jistota nejsou jen pípy. Je to místo, kde si můžeš sednout, nechat se <strong>poradit od někoho, kdo pivu opravdu rozumí</strong>, a objevit kváskové ležáky, hazy IPy nebo temné stouty, které jsi ještě neznal.</p>
+        <p>Naše spodní patro – <strong>sál a salonek</strong> – je ideální pro soukromé akce, pivní ochutnávky nebo firemní posezení. Prostor pro až 40 hostů, kteří chtějí jistotu dobrého piva v soukromí.</p>
+        <p>Jsme v <strong>Dejvicích</strong> a proud místních štamgastů, studentů a pivních nadšenců to potvrzuje. Jsi vítaný, ať přijdeš sám nebo s partou.</p>
+        <div class="amenities">
+          <div class="amenity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Wi-Fi zdarma
+          </div>
+          <div class="amenity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m6 3 6 3m-6-3-1.7-5"/><path d="m6 16 4 3m-4-3V9.5c0-.3.2-.5.4-.6l9.1-3.4c.4-.2.8.1.8.6V13"/></svg>
+            Dog-friendly
+          </div>
+          <div class="amenity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Soukromé akce
+          </div>
+          <div class="amenity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Sál · Salonek
+          </div>
+        </div>
+      </div>
+      <div class="about-photos">
+        <div class="about-photo tall" style="grid-row: span 2;">
+          <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=500&auto=format&fit=crop&q=60" alt="Craft beer taps" style="height:100%; min-height:320px;" />
+        </div>
+        <div class="about-photo">
+          <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&auto=format&fit=crop&q=60" alt="Bar atmosphere" />
+        </div>
+        <div class="about-photo">
+          <img src="https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?w=400&auto=format&fit=crop&q=60" alt="Cold beer glass" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="max-w">
+    <p class="section-label">Co říkají hosté</p>
+    <h2>Skoro 1&thinsp;000 <span>recenzí mluví za nás</span></h2>
+
+    <div class="rating-hero">
+      <div class="rating-num">4,4</div>
+      <div>
+        <div class="rating-stars">⭐⭐⭐⭐⭐</div>
+        <div class="rating-count"><strong>4,4 / 5</strong> na Google Maps</div>
+        <div class="rating-count">Z téměř <strong>1 000 recenzí</strong> od skutečných hostů</div>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer">
+            <div class="reviewer-avatar">JP</div>
+            <div>
+              <div class="reviewer-name">Jan Procházka</div>
+              <div class="reviewer-date">Únor 2025</div>
+            </div>
+          </div>
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        </div>
+        <p class="review-text">„Velký výběr piv, prima atmosféra a kamarádská obsluha. Pro pivníky povinná návštěva. Výčepní poradí s výběrem, zapamatují si, co rád piješ, a víš, že jsi vítaný."</p>
+        <div class="review-platform">Google Maps · Ověřená recenze</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer">
+            <div class="reviewer-avatar">MK</div>
+            <div>
+              <div class="reviewer-name">Markéta Křížová</div>
+              <div class="reviewer-date">Leden 2025</div>
+            </div>
+          </div>
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        </div>
+        <p class="review-text">„Konečně bar, kde člověk dostane normální poradu bez snobství. Přišla jsem sama a během chvíle jsem měla před sebou perfect sklenici NEIPA přesně podle svého vkusu."</p>
+        <div class="review-platform">Google Maps · Ověřená recenze</div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-top">
+          <div class="reviewer">
+            <div class="reviewer-avatar">TO</div>
+            <div>
+              <div class="reviewer-name">Tomáš Ondráček</div>
+              <div class="reviewer-date">Prosinec 2024</div>
+            </div>
+          </div>
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        </div>
+        <p class="review-text">„Chodím sem pravidelně. Rotující výběr píp mě furt překvapí – vždy něco nového, vždy kvalitní. Paštiky k tomu jsou fakt výborné. Prostě dejvická klasika."</p>
+        <div class="review-platform">Google Maps · Ověřená recenze</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <a href="#" class="nav-logo" style="font-size:1.4rem;">Pivní <span>Jistota</span></a>
+      <p class="footer-tagline">Tvoje spolehlivá zastávka pro řemeslné pivo v Dejvicích. Od výčepních, kteří to myslí s pivem vážně.</p>
+      <div class="footer-socials">
+        <a href="https://www.facebook.com/pivnijistota" target="_blank" rel="noopener" class="social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </a>
+        <a href="https://untappd.com/v/pivni-jistota" target="_blank" rel="noopener" class="social-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          Untappd
+        </a>
+      </div>
+    </div>
+
+    <!-- Hours -->
+    <div>
+      <div class="footer-section-title">Otevírací doba</div>
+      <ul class="hours-list">
+        <li><span class="hours-day">Pondělí</span><span class="hours-time">16:00 – 23:00</span></li>
+        <li><span class="hours-day">Úterý</span><span class="hours-time">16:00 – 23:00</span></li>
+        <li><span class="hours-day">Středa</span><span class="hours-time">16:00 – 23:00</span></li>
+        <li><span class="hours-day">Čtvrtek</span><span class="hours-time tonight">16:00 – 23:59</span></li>
+        <li><span class="hours-day">Pátek</span><span class="hours-time tonight">16:00 – 23:59</span></li>
+        <li><span class="hours-day">Sobota</span><span class="hours-time">17:00 – 23:00</span></li>
+        <li><span class="hours-day">Neděle</span><span class="hours-time">17:00 – 23:00</span></li>
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div>
+      <div class="footer-section-title">Kontakt</div>
+      <ul class="contact-list">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>
+            <a href="https://maps.google.com/?q=Kyjevská+686/3,+160+00+Praha+6" target="_blank" rel="noopener">Kyjevská 686/3<br>160 00 Praha 6 – Dejvice</a>
+          </span>
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.59 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.5 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.07z"/></svg>
+          <a href="tel:+420725569704" class="small">725 569 704</a>
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:pivni.jistota@gmail.com" class="small">pivni.jistota@gmail.com</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Map -->
+    <div>
+      <div class="footer-section-title">Kde nás najdeš</div>
+      <div class="map-block">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2559.0!2d14.3926!3d50.0988!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470b953d5ac2659b%3A0x12345!2sKyjevsk%C3%A1+686%2F3%2C+160+00+Praha+6!5e0!3m2!1scs!2scz!4v1234567890"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mapa Pivní Jistota, Dejvice">
+        </iframe>
+      </div>
+      <p class="transport-note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Metro Hradčanská · Dejvická (5 min)
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2025 Pivní Jistota · Praha 6</span>
+    <span>Tvoje jistota dobrého piva</span>
+  </div>
+</footer>
+
+<!-- MOBILE STICKY CTA -->
+<div class="mobile-cta">
+  <a href="tel:+420725569704" class="call">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.59 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.5 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.88-.88a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.07z"/></svg>
+    Zavolat
+  </a>
+  <a href="#taplist" class="reserve">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h4v13H3zM9 3h4v17H9zM15 10h4v10h-4z"/></svg>
+    Co teče?
+  </a>
+</div>
+
+</body>
+</html>
